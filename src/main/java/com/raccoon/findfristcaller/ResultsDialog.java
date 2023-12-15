@@ -16,7 +16,7 @@ public class ResultsDialog extends JDialog {
     private final JTable table;
 
     public ResultsDialog(PsiMethod selectedMethod, int count) {
-        setTitle("검색 메소드 : " + selectedMethod.getName() + "     카운드 : " + count);
+        setTitle("검색 메소드 : " + selectedMethod.getName() + "     카운트 : " + count);
         setModal(true);
         setSize(1200, 800);
         setLocationRelativeTo(null);
