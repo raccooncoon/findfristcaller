@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "findFristCaller"
+rootProject.name = "findFirstCaller"

@@ -1,11 +1,11 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.raccoon.findFristCaller</id>
+    <id>com.raccoon.findFirstCaller</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>FindFristCaller</name>
+    <name>FindFirstCaller</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
@@ -29,7 +29,7 @@
 
     </extensions>
     <actions>
-        <action id="findfristcaller" class="com.raccoon.findfristcaller.FindFirstCaller" text="최초 호출 클래스 찾기">
+        <action id="findfirstcaller" class="com.raccoon.findfirstcaller.FindFirstCaller" text="최초 호출 클래스 찾기">
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
     </actions>
