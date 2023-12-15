@@ -35,10 +35,11 @@ public class FindFirstCaller extends AnAction {
         Set<CallerInfo> callers = getCallerInfos(selectedMethod, project);
 
         // 다이얼로그 생성 및 데이터 설정
-        ResultsDialog dialog = new ResultsDialog();
-        dialog.setResults(getObjects(callers));
-        dialog.setVisible(true);
-
+        if (selectedMethod != null) {
+            ResultsDialog dialog = new ResultsDialog(selectedMethod);
+            dialog.setResults(getObjects(callers));
+            dialog.setVisible(true);
+        }
     }
 
     @NotNull
