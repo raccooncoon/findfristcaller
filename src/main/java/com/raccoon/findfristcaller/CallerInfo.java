@@ -28,7 +28,16 @@ public class CallerInfo {
 
         for (PsiAnnotation annotation : modifierList.getAnnotations()) {
             String qualifiedName = annotation.getQualifiedName();
-            if ("RestController".equals(qualifiedName) || "RequestMapping".equals(qualifiedName)) {
+            if ("RestController".equals(qualifiedName) || "RequestMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.Controller".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.RestController".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.RequestMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.GetMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.PostMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.PutMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.DeleteMapping".equals(qualifiedName)
+                    || "org.springframework.web.bind.annotation.PatchMapping".equals(qualifiedName)
+            ) {
                 PsiAnnotationMemberValue value = annotation.findDeclaredAttributeValue("value");
                 if (value == null) {
                     // "value" 속성이 없는 경우, 첫 번째 어노테이션 값을 사용
