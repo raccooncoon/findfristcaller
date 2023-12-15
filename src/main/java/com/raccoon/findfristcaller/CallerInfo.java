@@ -2,15 +2,17 @@ package com.raccoon.findfristcaller;
 
 import com.intellij.psi.*;
 
+import java.util.Arrays;
+
 public class CallerInfo {
     private final PsiClass psiClass;
     private final PsiMethod psiMethod;
     private final String url;
 
-    public CallerInfo(PsiClass psiClass, PsiMethod psiMethod) {
-        this.psiClass = psiClass;
+    public CallerInfo(PsiMethod psiMethod) {
         this.psiMethod = psiMethod;
-        this.url = extractUrl(psiClass, psiMethod);
+        this.psiClass = psiMethod != null ? psiMethod.getContainingClass() : null;
+        this.url = (psiClass != null) ? extractUrl(psiClass, psiMethod) : "";
     }
 
     private String extractUrl(PsiClass psiClass, PsiMethod psiMethod) {
@@ -26,37 +28,38 @@ public class CallerInfo {
             return "";
         }
 
+        String[] annotationNames = {
+                "Controller",
+                "RestController",
+                "RequestMapping",
+                "GetMapping",
+                "PostMapping",
+                "PutMapping",
+                "DeleteMapping",
+                "PatchMapping",
+                "org.springframework.web.bind.annotation.Controller",
+                "org.springframework.web.bind.annotation.RestController",
+                "org.springframework.web.bind.annotation.RequestMapping",
+                "org.springframework.web.bind.annotation.GetMapping",
+                "org.springframework.web.bind.annotation.PostMapping",
+                "org.springframework.web.bind.annotation.PutMapping",
+                "org.springframework.web.bind.annotation.DeleteMapping",
+                "org.springframework.web.bind.annotation.PatchMapping"
+        };
+
         for (PsiAnnotation annotation : modifierList.getAnnotations()) {
             String qualifiedName = annotation.getQualifiedName();
-            if ("RestController".equals(qualifiedName) || "RequestMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.Controller".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.RestController".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.RequestMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.GetMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.PostMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.PutMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.DeleteMapping".equals(qualifiedName)
-                    || "org.springframework.web.bind.annotation.PatchMapping".equals(qualifiedName)
-            ) {
+            if (Arrays.asList(annotationNames).contains(qualifiedName)) {
                 PsiAnnotationMemberValue value = annotation.findDeclaredAttributeValue("value");
-                if (value == null) {
-                    // "value" 속성이 없는 경우, 첫 번째 어노테이션 값을 사용
-                    PsiAnnotationParameterList params = annotation.getParameterList();
-                    PsiNameValuePair[] attributes = params.getAttributes();
-                    if (attributes.length > 0) {
-                        PsiAnnotationMemberValue firstValue = attributes[0].getValue();
-                        if (firstValue != null) {
-                            return firstValue.getText().replaceAll("^\"|\"$", ""); // 따옴표 제거
-                        }
-                    }
-                } else {
-                    // "value" 속성이 있는 경우, 해당 값을 사용
-                    return value.getText().replaceAll("^\"|\"$", "");
+                if (value != null) {
+                    String text = value.getText();
+                    return text.replaceAll("^\"|\"$", "");
                 }
             }
         }
         return "";
     }
+
 
     public PsiClass getPsiClass() {
         return psiClass;

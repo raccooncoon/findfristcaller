@@ -12,15 +12,13 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FindFirstCaller extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-
-//        Messages.showInfoMessage("Hello World!", "Information");
 
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         Project project = e.getProject();
@@ -34,30 +32,26 @@ public class FindFirstCaller extends AnAction {
         PsiElement selectedElement = psiFile.findElementAt(offset);
         PsiMethod selectedMethod = PsiTreeUtil.getParentOfType(selectedElement, PsiMethod.class);
 
-        Set<CallerInfo> callers = new HashSet<>();
-
-        if (selectedMethod != null) {
-            Set<PsiMethod> initialCallers = new HashSet<>();
-            findInitialCallers(selectedMethod, initialCallers, project);
-
-            initialCallers.forEach(method -> {
-                PsiClass containingClass = method.getContainingClass();
-                if (containingClass != null) {
-                    callers.add(new CallerInfo(containingClass, method));
-                }
-            });
-        }
-
-
-//        List<String> list = callers.stream().map(CallerInfo::toString).toList();
-//
-//        Messages.showInfoMessage(list.toString(), "Callers Found");
+        Set<CallerInfo> callers = getCallerInfos(selectedMethod, project);
 
         // 다이얼로그 생성 및 데이터 설정
         ResultsDialog dialog = new ResultsDialog();
         dialog.setResults(getObjects(callers));
         dialog.setVisible(true);
 
+    }
+
+    @NotNull
+    private Set<CallerInfo> getCallerInfos(PsiMethod selectedMethod, Project project) {
+        return Optional.ofNullable(selectedMethod)
+                .map(method -> {
+                    Set<PsiMethod> initialCallers = new HashSet<>();
+                    findInitialCallers(selectedMethod, initialCallers, project);
+                    return initialCallers.stream()
+                            .map(CallerInfo::new)
+                            .collect(Collectors.toSet());
+                })
+                .orElse(Collections.emptySet());
     }
 
     @NotNull
