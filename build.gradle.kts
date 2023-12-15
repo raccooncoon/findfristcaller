@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "1.2-SNAPSHOT"
+version = "1.3-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -43,4 +43,25 @@ tasks {
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
     }
+}
+
+dependencies {
+    // lombok
+    compileOnly ("org.projectlombok:lombok:1.18.22") // 롬복 라이브러리 추가
+    annotationProcessor ("org.projectlombok:lombok:1.18.22") // 롬복 어노테이션 프로세서 추가
+
+//    // H2 Database
+//    implementation("com.h2database:h2:2.2.224")
+//
+//    // JPA API
+//    implementation ("javax.persistence:javax.persistence-api:2.2")
+//
+//    // Hibernate JPA Provider
+//    implementation ("org.hibernate:hibernate-core:5.6.6.Final")
+
+//    implementation ("org.hibernate:hibernate-entitymanager:5.5.7.Final") // Hibernate Entity Manager
+//    implementation ("org.hibernate:hibernate-java8:5.5.7.Final") // Hibernate Java 8 Support
+//    implementation ("org.hibernate:hibernate-c3p0:5.5.7.Final") // Hibernate Connection Pool (Optional)
+
+
 }

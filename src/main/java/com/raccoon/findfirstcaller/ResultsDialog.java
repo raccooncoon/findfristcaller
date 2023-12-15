@@ -11,12 +11,13 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.Set;
 
 public class ResultsDialog extends JDialog {
     private final JTable table;
 
-    public ResultsDialog(PsiMethod selectedMethod, int count) {
-        setTitle("검색 메소드 : " + selectedMethod.getName() + "     카운트 : " + count);
+    public ResultsDialog(PsiMethod selectedMethod, Set<CallerInfo> callers) {
+        setTitle("검색 메소드 : " + selectedMethod.getName() + "     카운트 : " + callers.size());
         setModal(true);
         setSize(1200, 800);
         setLocationRelativeTo(null);
@@ -55,10 +56,26 @@ public class ResultsDialog extends JDialog {
             copyToClipboard(); // 클립보드 복사 버튼을 클릭하면 클립보드에 복사
         });
 
+        // 저장 버튼 추가
+        JButton saveButton = new JButton("csv 새로 저장");
+        saveButton.addActionListener(e -> saveToFile(callers, false, selectedMethod));
+
+        // 추가 버튼 추가
+        JButton addButton = new JButton("csv 추가");
+        addButton.addActionListener(e -> saveToFile(callers, true, selectedMethod));
+
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(copyButton);
         buttonPanel.add(closeButton);
+        buttonPanel.add(copyButton);
+        buttonPanel.add(saveButton);
+        buttonPanel.add(addButton);
         add(buttonPanel, BorderLayout.SOUTH);
+
+    }
+
+    private void saveToFile(Set<CallerInfo> callers, boolean append, PsiMethod selectedMethod) {
+        // FindFirstCaller 클래스의 saveFile 메소드 호출
+        new FindFirstCaller().saveCsvFile(callers, append, selectedMethod);
     }
 
     public void setResults(Object[][] data) {
