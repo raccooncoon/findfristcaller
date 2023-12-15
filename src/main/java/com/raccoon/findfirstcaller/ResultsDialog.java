@@ -38,6 +38,11 @@ public class ResultsDialog extends JDialog {
             }
         });
 
+        // 컬럼 너비 설정
+        table.getColumnModel().getColumn(0).setPreferredWidth(500); // 클래스 컬럼 너비
+        table.getColumnModel().getColumn(1).setPreferredWidth(200); // 메소드 컬럼 너비
+        table.getColumnModel().getColumn(2).setPreferredWidth(500); // URL 컬럼 너비
+
         // 닫기 버튼 추가
         JButton closeButton = new JButton("닫기");
         closeButton.addActionListener(e -> {
