@@ -15,10 +15,10 @@ import java.awt.datatransfer.StringSelection;
 public class ResultsDialog extends JDialog {
     private final JTable table;
 
-    public ResultsDialog(PsiMethod selectedMethod) {
-        setTitle("검색 메소드 : " + selectedMethod.getName());
+    public ResultsDialog(PsiMethod selectedMethod, int count) {
+        setTitle("검색 메소드 : " + selectedMethod.getName() + "     카운드 : " + count);
         setModal(true);
-        setSize(600, 400);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
 
         table = new JBTable();

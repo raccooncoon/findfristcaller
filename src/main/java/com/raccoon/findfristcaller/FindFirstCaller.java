@@ -36,7 +36,7 @@ public class FindFirstCaller extends AnAction {
 
         // 다이얼로그 생성 및 데이터 설정
         if (selectedMethod != null) {
-            ResultsDialog dialog = new ResultsDialog(selectedMethod);
+            ResultsDialog dialog = new ResultsDialog(selectedMethod, callers.size());
             dialog.setResults(getObjects(callers));
             dialog.setVisible(true);
         }
