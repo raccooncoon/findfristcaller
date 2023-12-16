@@ -48,13 +48,6 @@ public class FindFirstCaller extends AnAction {
         }
     }
 
-
-
-
-
-
-
-
     @NotNull
     private Set<CallerInfo> getCallerInfos(PsiMethod selectedMethod, Project project) {
         return Optional.ofNullable(selectedMethod)

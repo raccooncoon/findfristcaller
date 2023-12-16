@@ -45,14 +45,21 @@ public class XmlMapping extends AnAction {
     @SneakyThrows
     private void getXmlFileList(String folderPath, String moduleName) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(folderPath))) {
-            pathStream.filter(Files::isRegularFile).filter(path -> path.toString().toLowerCase().endsWith(".xml")).map(Path::toFile).flatMap(this::getXNodeList).forEach(x -> new FileInfo().getSave(x, moduleName));
+            pathStream.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().toLowerCase().endsWith(".xml"))
+                    .map(Path::toFile)
+                    .flatMap(this::getXNodeList)
+                    .forEach(x -> new FileInfo().getSave(x, moduleName));
         }
     }
 
     private Stream<XnodeRecord> getXNodeList(File file) {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             XPathParser parser = new XPathParser(fileInputStream, false, null, null);
-            return Stream.of("/mapper", "/sqlMap").flatMap(expression -> parser.evalNodes(expression).stream()).flatMap(nodes -> nodes.getChildren().stream()).map(node -> new XnodeRecord(parser.evalString("//" + node.getPath() + "[@id='" + node.getStringAttribute("id") + "']"), file, node));
+            return Stream.of("/mapper", "/sqlMap")
+                    .flatMap(expression -> parser.evalNodes(expression).stream())
+                    .flatMap(nodes -> nodes.getChildren().stream())
+                    .map(node -> new XnodeRecord(parser.evalString("//" + node.getPath() + "[@id='" + node.getStringAttribute("id") + "']"), file, node));
         } catch (IOException | RuntimeException e) {
             // 파일을 읽거나 파싱하는 중 발생한 오류를 기록하고 무시합니다.
             System.err.println("Error processing file: " + file.getPath() + " - " + e.getMessage());
