@@ -71,12 +71,12 @@ public class FileInfo {
 
     private void writeCallerInfo(BufferedWriter writer, CallerInfo caller, PsiMethod selectedMethod, String moduleName) throws IOException {
         String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                moduleName,
                 caller.getPsiClass().getQualifiedName(),
                 caller.getPsiMethod().getName(),
                 caller.getUrl(),
                 Objects.requireNonNull(selectedMethod.getContainingClass()).getQualifiedName(),
-                selectedMethod.getName(),
-                moduleName
+                selectedMethod.getName()
         );
         writer.write(line);
     }
