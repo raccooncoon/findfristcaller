@@ -75,7 +75,7 @@ public class ResultsDialog extends JDialog {
 
     private void saveToFile(Set<CallerInfo> callers, boolean append, PsiMethod selectedMethod) {
         // FindFirstCaller 클래스의 saveFile 메소드 호출
-        new FindFirstCaller().saveCsvFile(callers, append, selectedMethod);
+        new FileInfo().saveCsvFile(callers, append, selectedMethod);
         dispose();
     }
 

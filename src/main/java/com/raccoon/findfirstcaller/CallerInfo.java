@@ -1,9 +1,11 @@
 package com.raccoon.findfirstcaller;
 
 import com.intellij.psi.*;
+import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 public class CallerInfo {
     private final PsiClass psiClass;
     private final PsiMethod psiMethod;
@@ -58,18 +60,5 @@ public class CallerInfo {
             }
         }
         return "";
-    }
-
-
-    public PsiClass getPsiClass() {
-        return psiClass;
-    }
-
-    public PsiMethod getPsiMethod() {
-        return psiMethod;
-    }
-
-    public String getUrl() {
-        return url;
     }
 }

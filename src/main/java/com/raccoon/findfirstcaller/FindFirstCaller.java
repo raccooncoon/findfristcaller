@@ -5,20 +5,20 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FindFirstCaller extends AnAction {
@@ -48,49 +48,11 @@ public class FindFirstCaller extends AnAction {
         }
     }
 
-    public void saveCsvFile(Set<CallerInfo> callers, boolean append, PsiMethod selectedMethod) {
-        String filePath = generateSavePath("result.csv", selectedMethod.getProject());
-        // 파일이 존재하지 않거나, 새로 쓰기 모드인 경우 헤더를 추가합니다.
-        boolean writeHeader = !new File(filePath).exists() || !append;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, append))) {
-            // 새 파일이거나 새로 쓰기 모드인 경우에만 헤더를 작성합니다.
-            if (writeHeader) {
-                writer.write("Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
-            }
 
-            for (CallerInfo caller : callers) {
-                writeCallerInfo(writer, caller, selectedMethod);
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException("파일 작성 중 오류 발생", ex);
-        }
-    }
 
-    private void writeCallerInfo(BufferedWriter writer, CallerInfo caller, PsiMethod selectedMethod) throws IOException {
-        String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
-                caller.getPsiClass().getQualifiedName(),
-                caller.getPsiMethod().getName(),
-                caller.getUrl(),
-                Objects.requireNonNull(selectedMethod.getContainingClass()).getQualifiedName(),
-                selectedMethod.getName()
-        );
-        writer.write(line);
-    }
 
-    private String generateSavePath(String defaultFileName, Project project) {
-        String projectName = project.getName(); // 프로젝트 이름을 얻습니다.
-        String fileName = projectName + "_" + defaultFileName; // 파일 이름을 프로젝트 이름으로 설정합니다.
 
-        Path directoryPath = Paths.get(System.getProperty("user.home"), "메소드 검색 결과");
-        File directory = directoryPath.toFile();
-
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        return directoryPath.resolve(fileName).toString();
-    }
 
 
     @NotNull
