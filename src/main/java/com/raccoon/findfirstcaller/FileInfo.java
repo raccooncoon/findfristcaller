@@ -1,5 +1,7 @@
 package com.raccoon.findfirstcaller;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +21,7 @@ public class FileInfo {
     public String generateSavePath(String defaultFileName, String projectName) {
         String fileName = projectName + "_" + defaultFileName; // 파일 이름을 프로젝트 이름으로 설정합니다.
 
-        Path directoryPath = Paths.get(System.getProperty("user.home"), "메소드 검색 결과");
+        Path directoryPath = Paths.get(System.getProperty("user.home"), "검색 결과");
         java.io.File directory = directoryPath.toFile();
 
         if (!directory.exists()) {
@@ -27,6 +29,25 @@ public class FileInfo {
         }
 
         return directoryPath.resolve(fileName).toString();
+    }
+
+    public void saveCsvFile(Set<CallerInfo> callers, boolean append, PsiMethod selectedMethod, String moduleName) {
+        String filePath = new FileInfo().generateSavePath("result.csv", selectedMethod.getProject().getName());
+        // 파일이 존재하지 않거나, 새로 쓰기 모드인 경우 헤더를 추가합니다.
+        boolean writeHeader = !new File(filePath).exists() || !append;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, append))) {
+            // 새 파일이거나 새로 쓰기 모드인 경우에만 헤더를 작성합니다.
+            if (writeHeader) {
+                writer.write("Module Name, Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
+            }
+
+            for (CallerInfo caller : callers) {
+                writeCallerInfo(writer, caller, selectedMethod, moduleName);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("파일 작성 중 오류 발생", ex);
+        }
     }
 
     public void saveCsvFile(Set<CallerInfo> callers, boolean append, PsiMethod selectedMethod) {
@@ -37,7 +58,7 @@ public class FileInfo {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, append))) {
             // 새 파일이거나 새로 쓰기 모드인 경우에만 헤더를 작성합니다.
             if (writeHeader) {
-                writer.write("Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
+                writer.write("Module Name, Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
             }
 
             for (CallerInfo caller : callers) {
@@ -46,6 +67,18 @@ public class FileInfo {
         } catch (IOException ex) {
             throw new RuntimeException("파일 작성 중 오류 발생", ex);
         }
+    }
+
+    private void writeCallerInfo(BufferedWriter writer, CallerInfo caller, PsiMethod selectedMethod, String moduleName) throws IOException {
+        String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                caller.getPsiClass().getQualifiedName(),
+                caller.getPsiMethod().getName(),
+                caller.getUrl(),
+                Objects.requireNonNull(selectedMethod.getContainingClass()).getQualifiedName(),
+                selectedMethod.getName(),
+                moduleName
+        );
+        writer.write(line);
     }
 
     private void writeCallerInfo(BufferedWriter writer, CallerInfo caller, PsiMethod selectedMethod) throws IOException {
@@ -59,9 +92,9 @@ public class FileInfo {
         writer.write(line);
     }
 
-    public void getSave(XnodeRecord xnodeRecord, String moduleName){
+    public void getSave(XnodeRecord xnodeRecord, Project project, Module module){
 
-        String fileName = moduleName + "-xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
+        String fileName = project.getName() + "-xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
 
         java.io.File directory = getXmlSavePath().toFile();
 
@@ -70,12 +103,13 @@ public class FileInfo {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(getXmlSavePath().resolve(fileName).toString(),true))) {
-            String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
-                    xnodeRecord.file().getName(),
+            String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                    module.getName(),
                     xnodeRecord.xNode().getName(),
-                    Optional.ofNullable(xnodeRecord.xNode().getStringAttribute("id")).orElse("no_mapper_id_" + LocalDate.now()),
                     xnodeRecord.xNode().getParent().getStringAttribute("namespace"),
-                    xnodeRecord.xNodeBody()
+                    Optional.ofNullable(xnodeRecord.xNode().getStringAttribute("id")).orElse("no_mapper_id_" + LocalDate.now()),
+                    xnodeRecord.file().getName(),
+                    xnodeRecord.xNodeBody().replace("\"","'")
             );
             writer.write(line);
         } catch (IOException ex) {
@@ -84,7 +118,7 @@ public class FileInfo {
     }
     @NotNull
     public Path getXmlSavePath() {
-        return Paths.get(System.getProperty("user.home"), "Xml 검색 결과");
+        return Paths.get(System.getProperty("user.home"), "검색 결과");
     }
 
     public void deleteFilesInDirectory(Path directoryPath) {

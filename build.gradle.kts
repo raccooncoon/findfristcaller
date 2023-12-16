@@ -50,6 +50,9 @@ dependencies {
     compileOnly ("org.projectlombok:lombok:1.18.22") // 롬복 라이브러리 추가
     annotationProcessor ("org.projectlombok:lombok:1.18.22") // 롬복 어노테이션 프로세서 추가
     implementation ("org.mybatis:mybatis:3.5.8")
+    implementation ("org.apache.commons:commons-csv:1.10.0")
+    implementation("com.github.jsqlparser:jsqlparser:4.7")
+
 
 //    // H2 Database
 //    implementation("com.h2database:h2:2.2.224")

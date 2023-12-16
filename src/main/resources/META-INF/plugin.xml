@@ -33,7 +33,11 @@
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
         <action id="xmlMapping" class="com.raccoon.findfirstcaller.XmlMapping" text="Mybatis Xml 파일 맵핑 저장 ">
-            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        <action id="xmlToFindFirstCaller" class="com.raccoon.findfirstcaller.XmlToFindFirstCaller"
+                text="Xml csv 파일 읽어 최초 콜 찾아 저장 하기">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
