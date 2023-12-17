@@ -38,7 +38,7 @@ public class FindFirstCaller extends AnAction {
 
         if (DumbService.isDumb(project)) {
             // 인덱싱이 완료될 때까지 대기하거나, 작업을 취소하거나, 사용자에게 알림을 표시
-            Messages.showDialog(project, "인덱싱이 완료될 때까지 기다려주세요.", "인덱싱 중", new String[]{"OK"}, 0, null);
+            Messages.showDialog(project, "인덱싱이 완료 후 다시 실행 하세요.", "인덱싱 중", new String[]{"OK"}, 0, null);
             return;
         }
 

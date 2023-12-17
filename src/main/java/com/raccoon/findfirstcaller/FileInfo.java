@@ -112,7 +112,7 @@ public class FileInfo {
                     .forEach(childNode -> {
                         String cud = childNode.getNodeName();
                         String namespace = getAttributeValue(node, "namespace");
-                        String mapperId = getAttributeValue(node, "id");
+                        String mapperId = getAttributeValue(childNode, "id");
                         String textContent = childNode.getTextContent().replaceAll("\"",",");
 
                         String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
