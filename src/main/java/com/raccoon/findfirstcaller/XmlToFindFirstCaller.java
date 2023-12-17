@@ -47,10 +47,10 @@ public class XmlToFindFirstCaller extends AnAction {
 
                     // 필드 검증 및 처리
                     if (fields.length >= 4) {
-                        String moduleName = fields[0];
-                        String cud = fields[1];
-                        String className = fields[2];
-                        String methodName = fields[3];
+                        String moduleName = fields[0].replaceAll("\"", "");
+                        String cud = fields[1].replaceAll("\"", "");
+                        String className = fields[2].replaceAll("\"", "");
+                        String methodName = fields[3].replaceAll("\"", "");
 
                         findFirstCallerProcess(moduleName, cud, className, methodName, project);
                     }
