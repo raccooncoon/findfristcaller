@@ -11,13 +11,11 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 public class XmlToFindFirstCaller extends AnAction {
@@ -39,13 +37,20 @@ public class XmlToFindFirstCaller extends AnAction {
         @Override
         public void run(ProgressIndicator indicator) {
             Project project = getProject();
-            try (Reader reader = Files.newBufferedReader(new FileInfo().getXmlSavePath().resolve(project.getName() + "-xml.csv"))) {
-                try (CSVParser csvParser = CSVParser.parse(reader, CSVFormat.DEFAULT)) {
-                    for (CSVRecord csvRecord : csvParser) {
-                        String moduleName = csvRecord.get(0);
-                        String cud = csvRecord.get(1);
-                        String className = csvRecord.get(2);
-                        String methodName = csvRecord.get(3);
+            Path csvFilePath = new FileInfo().getXmlSavePath().resolve(project.getName() + "-xml.csv");
+
+            try (BufferedReader reader = Files.newBufferedReader(csvFilePath)) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // 각 라인을 쉼표로 분리
+                    String[] fields = line.split(",");
+
+                    // 필드 검증 및 처리
+                    if (fields.length >= 4) {
+                        String moduleName = fields[0];
+                        String cud = fields[1];
+                        String className = fields[2];
+                        String methodName = fields[3];
 
                         findFirstCallerProcess(moduleName, cud, className, methodName, project);
                     }
