@@ -4,7 +4,9 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
@@ -31,6 +33,12 @@ public class FindFirstCaller extends AnAction {
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
 
         if (editor == null || project == null || psiFile == null) {
+            return;
+        }
+
+        if (DumbService.isDumb(project)) {
+            // 인덱싱이 완료될 때까지 대기하거나, 작업을 취소하거나, 사용자에게 알림을 표시
+            Messages.showDialog(project, "인덱싱이 완료될 때까지 기다려주세요.", "인덱싱 중", new String[]{"OK"}, 0, null);
             return;
         }
 

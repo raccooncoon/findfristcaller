@@ -111,8 +111,8 @@ public class FileInfo {
                     .filter(childNode -> childNode.getNodeType() == Node.ELEMENT_NODE)
                     .forEach(childNode -> {
                         String cud = childNode.getNodeName();
-                        String namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
-                        String mapperId = childNode.getAttributes().getNamedItem("id").getNodeValue();
+                        String namespace = getAttributeValue(node, "namespace");
+                        String mapperId = getAttributeValue(node, "id");
                         String textContent = childNode.getTextContent().replaceAll("\"",",");
 
                         String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
@@ -133,6 +133,11 @@ public class FileInfo {
         } catch (IOException ex) {
             throw new RuntimeException("파일 작성 중 오류 발생", ex);
         }
+    }
+
+    private String getAttributeValue(Node node, String attributeName) {
+        Node attribute = node.getAttributes().getNamedItem(attributeName);
+        return attribute != null ? attribute.getNodeValue() : "";
     }
     @NotNull
     public Path getXmlSavePath() {

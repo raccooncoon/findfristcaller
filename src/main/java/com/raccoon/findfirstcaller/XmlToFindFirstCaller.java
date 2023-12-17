@@ -6,7 +6,9 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -23,10 +25,20 @@ public class XmlToFindFirstCaller extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
-        if (project != null) {
-            Task.Backgroundable task = new BackgroundTask(project, "처리 중...");
-            ProgressManager.getInstance().run(task);
+
+        if (project == null) {
+            return;
         }
+
+        if (DumbService.isDumb(project)) {
+            // 인덱싱이 완료될 때까지 대기하거나, 작업을 취소하거나, 사용자에게 알림을 표시
+            Messages.showDialog(project, "인덱싱이 완료될 때까지 기다려주세요.", "인덱싱 중", new String[]{"OK"}, 0, null);
+            return;
+        }
+
+        Task.Backgroundable task = new BackgroundTask(project, "처리 중...");
+        ProgressManager.getInstance().run(task);
+
     }
 
     private static class BackgroundTask extends Task.Backgroundable {

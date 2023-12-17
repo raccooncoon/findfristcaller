@@ -7,7 +7,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +39,12 @@ public class XmlMapping extends AnAction {
         Project project = e.getProject();
 
         if (project == null) {
+            return;
+        }
+
+        if (DumbService.isDumb(project)) {
+            // 인덱싱이 완료될 때까지 대기하거나, 작업을 취소하거나, 사용자에게 알림을 표시
+            Messages.showDialog(project, "인덱싱이 완료될 때까지 기다려주세요.", "인덱싱 중", new String[]{"OK"}, 0, null);
             return;
         }
 
