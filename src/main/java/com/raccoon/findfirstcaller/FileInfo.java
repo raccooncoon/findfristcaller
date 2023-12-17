@@ -94,7 +94,7 @@ public class FileInfo {
 
     public void getSave(Node node, Project project, Module module){
 
-        String fileName = project.getName() + "-xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
+        String fileName = project.getName() + "_xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
 
         java.io.File directory = getXmlSavePath().toFile();
 

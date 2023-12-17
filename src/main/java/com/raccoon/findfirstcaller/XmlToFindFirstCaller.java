@@ -37,7 +37,7 @@ public class XmlToFindFirstCaller extends AnAction {
         @Override
         public void run(ProgressIndicator indicator) {
             Project project = getProject();
-            Path csvFilePath = new FileInfo().getXmlSavePath().resolve(project.getName() + "-xml.csv");
+            Path csvFilePath = new FileInfo().getXmlSavePath().resolve(project.getName() + "_xml.csv");
 
             try (BufferedReader reader = Files.newBufferedReader(csvFilePath)) {
                 String line;
