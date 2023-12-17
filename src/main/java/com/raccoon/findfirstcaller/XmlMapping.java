@@ -10,14 +10,22 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import lombok.SneakyThrows;
-import org.apache.ibatis.parsing.XPathParser;
+import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class XmlMapping extends AnAction {
@@ -28,12 +36,16 @@ public class XmlMapping extends AnAction {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         Project project = e.getProject();
 
+        if (project == null) {
+            return;
+        }
+
         // 실행 전 기존 파일 삭제
         new FileInfo().deleteFilesInDirectory(new FileInfo().getXmlSavePath());
 
         Task.Backgroundable task = new Task.Backgroundable(project, "Processing XML Files", false) {
             @Override
-            public void run(ProgressIndicator indicator) {
+            public void run(@NotNull ProgressIndicator indicator) {
                 Module[] modules = ModuleManager.getInstance(project).getModules();
                 for (Module module : modules) {
                     VirtualFile projectBaseDir = project.getBaseDir();
@@ -54,24 +66,31 @@ public class XmlMapping extends AnAction {
                     .filter(path -> path.toString().toLowerCase().endsWith(".xml"))
                     .map(Path::toFile)
                     .flatMap(this::getXNodeList)
-                    .forEach(x -> new FileInfo().getSave(x, project, module));
+                    .forEach(node -> new FileInfo().getSave(node, project, module));
         }
     }
-    private Stream<XnodeRecord> getXNodeList(File file) {
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            XPathParser parser = new XPathParser(fileInputStream, false, null, null);
-            return Stream.of("/mapper", "/sqlMap")
-                    .flatMap(expression -> parser.evalNodes(expression).stream())
-                    .flatMap(nodes -> nodes.getChildren().stream())
-                    .map(node -> new XnodeRecord(
-                            parser.evalString("//" + node.getPath() + "[@id='" + node.getStringAttribute("id") + "']"),
-                            file,
-                            node)
-                    );
-        } catch (IOException | RuntimeException e) {
-            // 파일을 읽거나 파싱하는 중 발생한 오류를 기록하고 무시합니다.
+
+    private Stream<Node> getXNodeList(File file) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true); // 보안 설정
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(file);
+            document.getDocumentElement().normalize();
+
+            return Stream.of("mapper", "sqlMap")
+                    .flatMap(nodeName -> getNodeStream(document, nodeName));
+
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             System.err.println("Error processing file: " + file.getPath() + " - " + e.getMessage());
-            return Stream.empty(); // 오류가 발생한 파일은 무시하고 빈 스트림을 반환합니다.
+            return Stream.empty();
         }
+    }
+
+    private Stream<Node> getNodeStream(Document document, String nodeName) {
+        NodeList nodes = document.getElementsByTagName(nodeName);
+        return IntStream.range(0, nodes.getLength())
+                .mapToObj(nodes::item)
+                .filter(node -> node.getNodeType() == Node.ELEMENT_NODE);
     }
 }

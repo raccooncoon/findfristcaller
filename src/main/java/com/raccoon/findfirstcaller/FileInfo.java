@@ -4,6 +4,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Node;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,10 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public class FileInfo {
 
@@ -92,7 +92,7 @@ public class FileInfo {
         writer.write(line);
     }
 
-    public void getSave(XnodeRecord xnodeRecord, Project project, Module module){
+    public void getSave(Node node, Project project, Module module){
 
         String fileName = project.getName() + "-xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
 
@@ -103,15 +103,33 @@ public class FileInfo {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(getXmlSavePath().resolve(fileName).toString(),true))) {
-            String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
-                    module.getName(),
-                    xnodeRecord.xNode().getName(),
-                    xnodeRecord.xNode().getParent().getStringAttribute("namespace"),
-                    Optional.ofNullable(xnodeRecord.xNode().getStringAttribute("id")).orElse("no_mapper_id_" + LocalDate.now()),
-                    xnodeRecord.file().getName(),
-                    xnodeRecord.xNodeBody().replace("\"","'")
-            );
-            writer.write(line);
+
+            String moduleName = module.getName();
+
+            IntStream.range(0, node.getChildNodes().getLength())
+                    .mapToObj(node.getChildNodes()::item)
+                    .filter(childNode -> childNode.getNodeType() == Node.ELEMENT_NODE)
+                    .forEach(childNode -> {
+                        String cud = childNode.getNodeName();
+                        String namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+                        String mapperId = childNode.getAttributes().getNamedItem("id").getNodeValue();
+                        String textContent = childNode.getTextContent().replaceAll("\"",",");
+
+                        String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                                moduleName,
+                                cud,
+                                namespace,
+                                mapperId,
+                                textContent
+                        );
+
+                        try {
+                            writer.write(line);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
         } catch (IOException ex) {
             throw new RuntimeException("파일 작성 중 오류 발생", ex);
         }
