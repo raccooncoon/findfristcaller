@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "2.0-SNAPSHOT"
+version = "2.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -19,19 +19,18 @@ intellij {
     version.set("2022.2.5")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("com.intellij.java","org.jetbrains.idea.maven"))
-
+    plugins.set(listOf("com.intellij.java"))
 }
 
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 
     patchPluginXml {
-        sinceBuild.set("222")
+        sinceBuild.set("221")
         untilBuild.set("233.*")
     }
 
@@ -50,7 +49,6 @@ dependencies {
     // lombok
     compileOnly ("org.projectlombok:lombok:1.18.22") // 롬복 라이브러리 추가
     annotationProcessor ("org.projectlombok:lombok:1.18.22") // 롬복 어노테이션 프로세서 추가
-    implementation ("org.apache.commons:commons-csv:1.10.0")
 
 //    // H2 Database
 //    implementation("com.h2database:h2:2.2.224")

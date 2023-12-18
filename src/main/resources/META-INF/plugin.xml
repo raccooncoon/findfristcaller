@@ -14,8 +14,9 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    사용법 <br>
+    <em>찾고자 하는 메소드 선택 후 새로 만들기(command + N or Alt + insert)</em>
+    <em>csv 파일 저장시 홈 폴더 /메소드 검색 결과 아래 저장</em>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements.
