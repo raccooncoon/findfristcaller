@@ -56,18 +56,7 @@ public class FindFirstCaller extends AnAction {
         }
     }
 
-    @NotNull
-    public Set<CallerInfo> getCallerInfos(PsiMethod selectedMethod, Project project) {
-        return Optional.ofNullable(selectedMethod)
-                .map(method -> {
-                    Set<PsiMethod> initialCallers = new HashSet<>();
-                    findInitialCallers(selectedMethod, initialCallers, project);
-                    return initialCallers.stream()
-                            .map(CallerInfo::new)
-                            .collect(Collectors.toSet());
-                })
-                .orElse(Collections.emptySet());
-    }
+
 
     @NotNull
     private static Object[][] getObjects(Set<CallerInfo> callers) {
@@ -82,24 +71,36 @@ public class FindFirstCaller extends AnAction {
         return data;
     }
 
-    private void findInitialCallers(PsiMethod method, Set<PsiMethod> initialCallers, Project project) {
-        if (initialCallers.contains(method)) {
-            return; // 이미 처리된 메소드는 건너뜁니다.
-        }
-        initialCallers.add(method); // 현재 메소드를 처리된 목록에 추가합니다.
+    @NotNull
+    public Set<CallerInfo> getCallerInfos(PsiMethod selectedMethod, Project project) {
+        Set<PsiMethod> visitedMethods = new HashSet<>();
+        return Optional.ofNullable(selectedMethod)
+                .map(method -> {
+                    Set<PsiMethod> initialCallers = new HashSet<>();
+                    findInitialCallers(selectedMethod, initialCallers, visitedMethods, project);
+                    return initialCallers.stream()
+                            .map(CallerInfo::new)
+                            .collect(Collectors.toSet());
+                })
+                .orElse(Collections.emptySet());
+    }
 
+    private void findInitialCallers(PsiMethod method, Set<PsiMethod> initialCallers, Set<PsiMethod> visitedMethods, Project project) {
+        if (visitedMethods.contains(method)) {
+            return;
+        }
+        visitedMethods.add(method);
         Query<PsiReference> references = MethodReferencesSearch.search(method, GlobalSearchScope.allScope(project), false);
         for (PsiReference reference : references) {
             PsiMethod referenceMethod = PsiTreeUtil.getParentOfType(reference.getElement(), PsiMethod.class);
-            if (referenceMethod != null && !initialCallers.contains(referenceMethod)) {
+            if (referenceMethod != null && !visitedMethods.contains(referenceMethod)) {
                 Query<PsiReference> higherReferences = MethodReferencesSearch.search(referenceMethod, GlobalSearchScope.allScope(project), false);
                 if (higherReferences.findFirst() == null) {
                     initialCallers.add(referenceMethod);
                 } else {
-                    findInitialCallers(referenceMethod, initialCallers, project);
+                    findInitialCallers(referenceMethod, initialCallers, visitedMethods, project);
                 }
             }
         }
     }
-
 }
