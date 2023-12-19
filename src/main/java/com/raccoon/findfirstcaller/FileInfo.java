@@ -39,7 +39,7 @@ public class FileInfo {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, append))) {
             // 새 파일이거나 새로 쓰기 모드인 경우에만 헤더를 작성합니다.
             if (writeHeader) {
-                writer.write("Module Name, Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
+                writer.write("serviceName,firstClassName,firstMethodName,url,className,methodName" + System.lineSeparator());
             }
 
             for (CallerInfo caller : callers) {
@@ -56,9 +56,8 @@ public class FileInfo {
         boolean writeHeader = !new File(filePath).exists() || !append;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, append))) {
-            // 새 파일이거나 새로 쓰기 모드인 경우에만 헤더를 작성합니다.
             if (writeHeader) {
-                writer.write("Module Name, Class Name,Method Name,URL,Selected Class Name,Selected Method Name" + System.lineSeparator());
+                writer.write("serviceName,firstClassName,firstMethodName,url,className,methodName" + System.lineSeparator());
             }
 
             for (CallerInfo caller : callers) {
@@ -95,32 +94,35 @@ public class FileInfo {
     public void getSave(Node node, Project project, Module module){
 
         String fileName = project.getName() + "_xml.csv"; // 파일 이름을 프로젝트 이름으로 설정합니다.
+        java.io.File file = getXmlSavePath().resolve(fileName).toFile();
 
-        java.io.File directory = getXmlSavePath().toFile();
-
-        if (!directory.exists()) {
-            directory.mkdirs();
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(getXmlSavePath().resolve(fileName).toString(),true))) {
 
-            String moduleName = module.getName();
+            // 최초 파일 생성 시 헤더 추가
+            if (file.length() == 0) {
+                writer.write("serviceName,mapperType,mapperNameSpace,mapperId,mapperBody" + System.lineSeparator());
+            }
 
+            String serviceName = module.getName();
             IntStream.range(0, node.getChildNodes().getLength())
                     .mapToObj(node.getChildNodes()::item)
                     .filter(childNode -> childNode.getNodeType() == Node.ELEMENT_NODE)
                     .forEach(childNode -> {
-                        String cud = childNode.getNodeName();
-                        String namespace = getAttributeValue(node, "namespace");
+                        String mapperType = childNode.getNodeName();
+                        String mapperNameSpace = getAttributeValue(node, "namespace");
                         String mapperId = getAttributeValue(childNode, "id");
-                        String textContent = childNode.getTextContent().replaceAll("\"",",");
+                        String mapperBody = childNode.getTextContent().replaceAll("\"",",");
 
                         String line = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
-                                moduleName,
-                                cud,
-                                namespace,
+                                serviceName,
+                                mapperType,
+                                mapperNameSpace,
                                 mapperId,
-                                textContent
+                                mapperBody
                         );
 
                         try {
