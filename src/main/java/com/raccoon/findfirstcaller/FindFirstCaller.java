@@ -70,14 +70,21 @@ public class FindFirstCaller extends AnAction {
             xmlTag = getXmlTag(xmlTag);
 
             String id = xmlTag.getAttributeValue("id");
-            String crud = xmlTag.getLocalName();
+//            String crud = xmlTag.getLocalName();
             String namespace = ((XmlTagImpl) xmlTag.getParent()).getAttributeValue("namespace");
 
             xmlTagText = xmlTag.getText();
 
+
+            // iBATIS 지원, <sqlMap
+            // xmlTag.getParent();
+            // findIBatisMethod(id, module);
+
+            // MyBatis 지원, <mapper
             selectedMethod = findAbstractMethod(id, namespace, module);
 
         }
+
 
         if (selectedMethod == null) {
             selectedMethod = PsiTreeUtil.getParentOfType(selectedElement, PsiMethod.class);
@@ -93,6 +100,16 @@ public class FindFirstCaller extends AnAction {
             dialog.setVisible(true);
         }
     }
+
+/*    private List<PsiMethod> findIBatisMethod(String sqlId, Module module) {
+        List<PsiMethod> foundMethods = new ArrayList<>();
+
+        Project project = module.getProject();
+        GlobalSearchScope moduleScope = GlobalSearchScope.moduleScope(module);
+
+
+        return foundMethods;
+    }*/
 
     @Nullable
     private XmlTag getXmlTag(XmlTag xmlTag) {
