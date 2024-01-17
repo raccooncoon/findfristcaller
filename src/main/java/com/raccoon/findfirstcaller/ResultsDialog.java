@@ -11,6 +11,8 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Set;
 
 public class ResultsDialog extends JDialog {
@@ -52,6 +54,29 @@ public class ResultsDialog extends JDialog {
             dispose(); // 닫기 버튼을 클릭하면 다이얼로그를 닫음
         });
 
+        // ESC 키를 눌렀을 때 다이얼로그를 닫도록 KeyListener 추가
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dispose(); // ESC 키를 누르면 다이얼로그를 닫음
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
+        // 다이얼로그가 포커스를 받을 수 있도록 설정
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
+
+
         // 클립보드 복사 버튼 추가
         JButton copyButton = new JButton("클립보드 복사");
         copyButton.addActionListener(e -> {
@@ -69,8 +94,8 @@ public class ResultsDialog extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(closeButton);
         buttonPanel.add(copyButton);
-        buttonPanel.add(saveButton);
-        buttonPanel.add(addButton);
+//        buttonPanel.add(saveButton);
+//        buttonPanel.add(addButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
     }
