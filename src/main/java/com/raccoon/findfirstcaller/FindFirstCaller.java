@@ -1,6 +1,5 @@
 package com.raccoon.findfirstcaller;
 
-import com.esotericsoftware.minlog.Log;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -17,16 +16,17 @@ import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.Query;
-import groovy.util.logging.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 public class FindFirstCaller extends AnAction {
 
     @Override
@@ -36,6 +36,7 @@ public class FindFirstCaller extends AnAction {
         Project project = e.getProject();
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         PsiMethod selectedMethod = null;
+        String projectBasePath = null;
         String sourceFolderName = null;
         Module module = null;
         String xmlTagText = null;
@@ -57,8 +58,7 @@ public class FindFirstCaller extends AnAction {
             // 선택된 요소가 속한 모듈 찾기
             module = ModuleUtil.findModuleForPsiElement(selectedElement);
             if (module != null) {
-                sourceFolderName = new File(module.getModuleFilePath()).getParentFile().getName();
-                Log.info("sourceFolderName : ", sourceFolderName);
+                sourceFolderName = new File(module.getModuleFilePath()).getName();
             }
         }
 
@@ -70,14 +70,10 @@ public class FindFirstCaller extends AnAction {
             xmlTag = getXmlTag(xmlTag);
 
             String id = xmlTag.getAttributeValue("id");
-            Log.info("id : ", id);
             String crud = xmlTag.getLocalName();
-            Log.info("crud :", crud);
             String namespace = ((XmlTagImpl) xmlTag.getParent()).getAttributeValue("namespace");
-            Log.info("namespace :", namespace);
 
             xmlTagText = xmlTag.getText();
-            Log.info("xmlTagText :", xmlTagText);
 
             selectedMethod = findAbstractMethod(id, namespace, module);
 
@@ -113,12 +109,10 @@ public class FindFirstCaller extends AnAction {
         GlobalSearchScope moduleScope = GlobalSearchScope.moduleScope(module);
         PsiClass mapperInterface = JavaPsiFacade.getInstance(module.getProject()).findClass(mapperInterfaceFullName, moduleScope);
 
-
         if (mapperInterface != null) {
             for (PsiMethod method : mapperInterface.getMethods()) {
                 String name = method.getName();
                 if (xmlId.equals(name)) {
-                    Log.info("Found method: {}", name);
                     return method;
                 }
             }
