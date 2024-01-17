@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "2.1-SNAPSHOT"
+version = "2.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -50,6 +50,7 @@ dependencies {
     compileOnly ("org.projectlombok:lombok:1.18.22") // 롬복 라이브러리 추가
     annotationProcessor ("org.projectlombok:lombok:1.18.22") // 롬복 어노테이션 프로세서 추가
 
+    implementation("org.slf4j:slf4j-api:1.7.30")
 //    // H2 Database
 //    implementation("com.h2database:h2:2.2.224")
 //
