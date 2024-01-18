@@ -39,7 +39,7 @@ public class FindFirstCaller extends AnAction {
         //String projectBasePath = null;
         String sourceFolderName = null;
         Module module = null;
-        String xmlTagText = null;
+        String xmlTagText = "";
 
         if (editor == null || project == null || psiFile == null) {
             return;
