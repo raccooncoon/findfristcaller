@@ -36,7 +36,7 @@ public class FindFirstCaller extends AnAction {
         Project project = e.getProject();
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         PsiMethod selectedMethod = null;
-        String projectBasePath = null;
+        //String projectBasePath = null;
         String sourceFolderName = null;
         Module module = null;
         String xmlTagText = null;
@@ -58,7 +58,7 @@ public class FindFirstCaller extends AnAction {
             // 선택된 요소가 속한 모듈 찾기
             module = ModuleUtil.findModuleForPsiElement(selectedElement);
             if (module != null) {
-                sourceFolderName = new File(module.getModuleFilePath()).getName();
+                sourceFolderName = new File(module.getModuleFilePath()).getName().replaceAll(".iml", "");
             }
         }
 

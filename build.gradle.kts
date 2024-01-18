@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "2.7-SNAPSHOT"
+version = "2.8-SNAPSHOT"
 
 repositories {
     mavenCentral()
