@@ -29,7 +29,7 @@ public class ResultsDialog extends JDialog {
         add(scrollPane, BorderLayout.CENTER);
 
         // 테이블 모델 설정
-        String[] columnNames = {"모듈 이름", "클래스", "메소드", "URL", "xmlTagText"};
+        String[] columnNames = {"모듈 이름", "검색 메소드", "클래스", "메소드", "URL", "xmlTagText"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         table.setModel(model);
 
@@ -42,11 +42,12 @@ public class ResultsDialog extends JDialog {
         });
 
         // 컬럼 너비 설정
-        table.getColumnModel().getColumn(0).setPreferredWidth(200); // 클래스 컬럼 너비
-        table.getColumnModel().getColumn(1).setPreferredWidth(500); // 클래스 컬럼 너비
-        table.getColumnModel().getColumn(2).setPreferredWidth(200); // 메소드 컬럼 너비
-        table.getColumnModel().getColumn(3).setPreferredWidth(500); // URL 컬럼 너비
-        table.getColumnModel().getColumn(4).setPreferredWidth(200); // URL 컬럼 너비
+        table.getColumnModel().getColumn(0).setPreferredWidth(200);
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(500);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(500);
+        table.getColumnModel().getColumn(5).setPreferredWidth(200);
 
         // 닫기 버튼 추가
         JButton closeButton = new JButton("닫기");

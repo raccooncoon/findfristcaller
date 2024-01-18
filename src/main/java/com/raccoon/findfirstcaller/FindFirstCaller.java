@@ -96,7 +96,7 @@ public class FindFirstCaller extends AnAction {
         // 다이얼로그 생성 및 데이터 설정
         if (selectedMethod != null) {
             ResultsDialog dialog = new ResultsDialog(selectedMethod, callers);
-            dialog.setResults(getObjects(callers, sourceFolderName, xmlTagText ));
+            dialog.setResults(getObjects(callers, sourceFolderName, xmlTagText, selectedMethod ));
             dialog.setVisible(true);
         }
     }
@@ -139,15 +139,16 @@ public class FindFirstCaller extends AnAction {
 
 
     @NotNull
-    private static Object[][] getObjects(Set<CallerInfo> callers, String sourceFolderName, String xmlTagText) {
-        Object[][] data = new Object[callers.size()][5];
+    private static Object[][] getObjects(Set<CallerInfo> callers, String sourceFolderName, String xmlTagText, PsiMethod selectedMethod) {
+        Object[][] data = new Object[callers.size()][6];
         int index = 0;
         for (CallerInfo caller : callers) {
             data[index][0] = sourceFolderName;
-            data[index][1] = caller.getPsiClass().getQualifiedName();
-            data[index][2] = caller.getPsiMethod().getName();
-            data[index][3] = caller.getUrl();
-            data[index][4] = xmlTagText;
+            data[index][1] = selectedMethod.getName();
+            data[index][2] = caller.getPsiClass().getQualifiedName();
+            data[index][3] = caller.getPsiMethod().getName();
+            data[index][4] = caller.getUrl();
+            data[index][5] = xmlTagText;
             index++;
         }
         return data;
