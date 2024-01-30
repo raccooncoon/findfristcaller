@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "2.8-SNAPSHOT"
+version = "2.9-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("221")
+        sinceBuild.set("212")
         untilBuild.set("233.*")
     }
 
