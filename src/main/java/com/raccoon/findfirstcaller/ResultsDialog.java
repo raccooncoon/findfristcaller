@@ -95,8 +95,8 @@ public class ResultsDialog extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(closeButton);
         buttonPanel.add(copyButton);
-        buttonPanel.add(saveButton);
-        buttonPanel.add(addButton);
+//        buttonPanel.add(saveButton);
+//        buttonPanel.add(addButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
     }
