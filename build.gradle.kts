@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.raccoon"
-version = "2.9-SNAPSHOT"
+version = "2.11-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -31,7 +31,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("212")
-        untilBuild.set("233.*")
+        untilBuild.set("999.*")
     }
 
     signPlugin {
